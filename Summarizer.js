@@ -17,47 +17,58 @@
         }
 
         /**
+         * Constructor for the summary handler
+         * @param   {Object} sumEngine  A valid summarization engine
+         * @param   {Object} engineOpts A hash-set of options applicable to ``engine``
+         * @return  {Summarizer}        An instance of a Summarizer
+         */
+        var Summarizer = function(sumEngine, engineOpts) {
+            // Default the options parameter to none if nothing is provided
+            var engineOpts = engineOpts || {};
+
+            // Quick and dirty type-check for the options
+            if (typeof(engineOpts) !== 'object') {
+                throw new TypeException('\'engineOpts\' must be an object.', engineOpts);
+            }
+
+            this.sumEngine = sumEngine;
+            this.engineOpts = engineOpts;
+
+            return {
+                get engine() {
+                    return sumEngine;
+                },
+                get options() {
+                    return engineOpts;
+                },
+                set options(updatedOptions) {
+                    // TODO: Fix this shit
+                    this.engineOpts = updatedOptions;
+                }
+            }
+        }
+
+        /**
          * Summarizes a body of text to the specified length. This will use
          * the summarization engine encapsulated by the constructor object.
          * @param  {String} input     The text to be summarized
          * @param  {Number} length    The desired length of the summary
          * @return {String}           The summary of ``input``
          */
-        var summarize = function(input, length) {
+        Summarizer.prototype.summarize = function(input, length) {
+            var length = length || Math.round(input.length * 0.2);
 
-        }
-
-        /**
-         * Constructor for the summary handler
-         * @param   {Object} engine     A valid summarization engine
-         * @param   {Object} options    A hash-set of options applicable to ``engine``
-         * @return  {Summarizer}        An instance of a Summarizer
-         */
-        var Summarizer = function(engine, options) {
-            // Default the options parameter to none if nothing is provided
-            var options = options || {};
-
-            // Quick and dirty type-check for the options
-            if (typeof(options) !== 'object') {
-                throw new TypeException('\'options\' must be an object.', options);
+            // Quick and dirty type-check for the input
+            if (typeof(input) !== 'string') {
+                throw new TypeException('\'input\' must be a string.', input);
             }
 
-            return {
-                get engine() {
-                    return this.engine;
-                },
-                get options() {
-                    return this.options;
-                },
-                set options(updatedOptions) {
-                    this.options = updatedOptions;
-                }
+            // Quick and dirty type-check for the length
+            if (typeof(length) !== 'number') {
+                throw new TypeException('\'length\' must be an object.', length);
             }
-        }
 
-        // Public methods for the Summarizer class.
-        Summarizer.prototype = {
-            summarize: summarize
+            return this.engine.summarize(input, length);
         }
 
         return Summarizer;
